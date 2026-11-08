@@ -1,17 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect, FormEvent } from 'react';
 
 export default function App() {
-  const [currentScreen, setCurrentScreen] = useState('login');
-  const [activeTab, setActiveTab] = useState('home');
+  const [currentScreen, setCurrentScreen] = useState<'login' | 'main'>('login');
+  const [activeTab, setActiveTab] = useState<string>('home');
   
   // State Login Biometrik
-  const [showBiometricModal, setShowBiometricModal] = useState(false);
+  const [showBiometricModal, setShowBiometricModal] = useState<boolean>(false);
   
   // State BCA ID & Password
-  const [bcaId, setBcaId] = useState('ERY977');
-  const [inputPassword, setInputPassword] = useState('');
-  const [showPasswordText, setShowPasswordText] = useState(false);
-  const [loginError, setLoginError] = useState('');
+  const [bcaId, setBcaId] = useState<string>('ERY977');
+  const [inputPassword, setInputPassword] = useState<string>('');
+  const [showPasswordText, setShowPasswordText] = useState<boolean>(false);
+  const [loginError, setLoginError] = useState<string>('');
 
   // Auto trigger Sidik Jari gaya-gayaan pas awal buka
   useEffect(() => {
@@ -25,15 +25,13 @@ export default function App() {
 
   const triggerBiometricEffect = () => {
     setShowBiometricModal(true);
-    
-    // Memindai 1.2 detik sekadar animasi, lalu modal hilang tanpa pesan apa-apa
     setTimeout(() => {
       setShowBiometricModal(false);
     }, 1200);
   };
 
   // Carousel Iklan State
-  const [currentAdIndex, setCurrentAdIndex] = useState(0);
+  const [currentAdIndex, setCurrentAdIndex] = useState<number>(0);
   const adsList = [
     {
       id: 1,
@@ -59,33 +57,42 @@ export default function App() {
   ];
 
   // Data Rekening (Saldo: IDR 20.081.300)
-  const [accountHolder, setAccountHolder] = useState('ERY');
-  const [accountNumber, setAccountNumber] = useState('8830492811');
-  const [balance, setBalance] = useState(20081300);
-  const [showBalance, setShowBalance] = useState(false);
+  const [accountHolder, setAccountHolder] = useState<string>('ERY');
+  const [accountNumber, setAccountNumber] = useState<string>('8830492811');
+  const [balance, setBalance] = useState<number>(20081300);
+  const [showBalance, setShowBalance] = useState<boolean>(false);
 
   // Custom Settings State
-  const [editName, setEditName] = useState(accountHolder);
-  const [editNumber, setEditNumber] = useState(accountNumber);
-  const [editBalance, setEditBalance] = useState(balance.toString());
-  const [saveSuccess, setSaveSuccess] = useState(false);
+  const [editName, setEditName] = useState<string>(accountHolder);
+  const [editNumber, setEditNumber] = useState<string>(accountNumber);
+  const [editBalance, setEditBalance] = useState<string>(balance.toString());
+  const [saveSuccess, setSaveSuccess] = useState<boolean>(false);
 
   // Transfer State
-  const [transferTarget, setTransferTarget] = useState('');
-  const [transferAmount, setTransferAmount] = useState('');
-  const [transferSuccess, setTransferSuccess] = useState(false);
+  const [transferTarget, setTransferTarget] = useState<string>('');
+  const [transferAmount, setTransferAmount] = useState<string>('');
+  const [transferSuccess, setTransferSuccess] = useState<boolean>(false);
 
   // Cardless State
-  const [cardlessCode, setCardlessCode] = useState(null);
+  const [cardlessCode, setCardlessCode] = useState<number | null>(null);
 
   // Mutasi Transaksi
-  const [transactions, setTransactions] = useState([
+  interface Transaction {
+    id: number;
+    type: 'in' | 'out';
+    title: string;
+    amount: number;
+    date: string;
+    time: string;
+  }
+
+  const [transactions, setTransactions] = useState<Transaction[]>([
     { id: 1, type: 'in', title: 'Transfer Masuk - PT GLOBAL TECH', amount: 5000000, date: '07 Nov 2026', time: '09:15' },
     { id: 2, type: 'out', title: 'QRIS - KOPI KENANGAN', amount: 35000, date: '06 Nov 2026', time: '14:20' },
     { id: 3, type: 'out', title: 'Transfer - ZAHWA LUPIS', amount: 150000, date: '05 Nov 2026', time: '18:45' },
   ]);
 
-  const handleManualLogin = (e) => {
+  const handleManualLogin = (e: FormEvent) => {
     e.preventDefault();
     if (!inputPassword.trim()) {
       setLoginError('Silakan masukkan password Anda');
@@ -96,7 +103,7 @@ export default function App() {
     setInputPassword('');
   };
 
-  const handleSaveProfile = (e) => {
+  const handleSaveProfile = (e: FormEvent) => {
     e.preventDefault();
     setAccountHolder(editName);
     setAccountNumber(editNumber);
@@ -105,7 +112,7 @@ export default function App() {
     setTimeout(() => setSaveSuccess(false), 2500);
   };
 
-  const handleExecuteTransfer = (e) => {
+  const handleExecuteTransfer = (e: FormEvent) => {
     e.preventDefault();
     const amt = parseFloat(transferAmount);
     if (!amt || amt > balance) return;
@@ -121,7 +128,7 @@ export default function App() {
     setTransferSuccess(true);
   };
 
-  const formatRupiah = (num) => {
+  const formatRupiah = (num: number) => {
     return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(num);
   };
 
@@ -131,13 +138,10 @@ export default function App() {
       {/* Container Frame HP */}
       <div style={{ width: '100%', maxWidth: '390px', height: '844px', backgroundColor: '#f0f4f8', borderRadius: '36px', overflow: 'hidden', display: 'flex', flexDirection: 'column', position: 'relative', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)', border: '8px solid #1e293b' }}>
         
-        {/* =========================================
-            SCREEN 1: LAYAR LOGIN
-        ========================================= */}
+        {/* LAYAR LOGIN */}
         {currentScreen === 'login' && (
           <div style={{ flex: 1, backgroundColor: '#ffffff', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', overflowY: 'auto' }}>
             <div>
-              {/* Header Top Bar */}
               <div style={{ padding: '16px 20px 12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#f0f9ff' }}>
                 <span style={{ fontSize: '24px', fontWeight: '900', color: '#00a3e0', letterSpacing: '-1px' }}>my<span style={{ color: '#00569c' }}>BCA</span></span>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
@@ -148,18 +152,14 @@ export default function App() {
                 </div>
               </div>
 
-              {/* Banner Promo Atas */}
               <div style={{ margin: '10px 16px', backgroundColor: '#38bdf8', borderRadius: '20px', padding: '16px', color: 'white', background: 'linear-gradient(135deg, #0284c7 0%, #38bdf8 100%)', boxShadow: '0 4px 12px rgba(2,132,199,0.2)' }}>
                 <p style={{ fontSize: '10px', opacity: 0.9, margin: 0 }}>The New Gebyar Hadiah BCA</p>
                 <h3 style={{ fontSize: '16px', fontWeight: '900', margin: '2px 0 4px' }}>TERIMA KASIH</h3>
                 <p style={{ fontSize: '9px', opacity: 0.8, margin: 0 }}>sudah bermain Gacha dan mengumpulkan poin</p>
               </div>
 
-              {/* FORM INPUT LOGIN */}
               <div style={{ padding: '16px 20px' }}>
                 <form onSubmit={handleManualLogin} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-                  
-                  {/* BCA ID */}
                   <div>
                     <label style={{ fontSize: '11px', color: '#64748b', fontWeight: 'bold', display: 'block', marginBottom: '4px' }}>BCA ID</label>
                     <input 
@@ -171,7 +171,6 @@ export default function App() {
                     />
                   </div>
 
-                  {/* Field Password */}
                   <div>
                     <label style={{ fontSize: '11px', color: '#64748b', fontWeight: 'bold', display: 'block', marginBottom: '4px' }}>Password</label>
                     <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
@@ -192,7 +191,6 @@ export default function App() {
                     </div>
                   </div>
 
-                  {/* ERROR INPUT KOSONG SAJA */}
                   {loginError && (
                     <div style={{ backgroundColor: '#fef2f2', border: '1px solid #fca5a5', padding: '8px 12px', borderRadius: '8px' }}>
                       <p style={{ fontSize: '11px', color: '#dc2626', margin: 0, fontWeight: 'bold', textAlign: 'center' }}>
@@ -201,7 +199,6 @@ export default function App() {
                     </div>
                   )}
 
-                  {/* Tombol Login & Sidik Jari */}
                   <div style={{ display: 'flex', gap: '10px', marginTop: '4px' }}>
                     <button 
                       type="submit"
@@ -222,7 +219,6 @@ export default function App() {
                 </form>
               </div>
 
-              {/* Card 3 Shortcut Icon */}
               <div style={{ margin: '0 16px 20px', backgroundColor: '#f8fafc', borderRadius: '20px', padding: '14px', display: 'flex', justifyContent: 'space-around', border: '1px solid #f1f5f9' }}>
                 {[
                   { title: 'Flazz', icon: '🎴' },
@@ -251,13 +247,10 @@ export default function App() {
           </div>
         )}
 
-        {/* =========================================
-            SCREEN 2: LAYAR UTAMA (BERANDA)
-        ========================================= */}
+        {/* LAYAR UTAMA (BERANDA) */}
         {currentScreen === 'main' && (
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', overflow: 'hidden', backgroundColor: '#00569c' }}>
             
-            {/* Header Bar */}
             <div style={{ padding: '16px 20px 4px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: 'white' }}>
               <span style={{ fontSize: '24px', fontWeight: '900', letterSpacing: '-1px' }}>my<span style={{ color: '#38bdf8' }}>BCA</span></span>
               <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
@@ -267,12 +260,10 @@ export default function App() {
               </div>
             </div>
 
-            {/* Scrollable Body */}
             <div style={{ flex: 1, overflowY: 'auto', padding: '12px 16px 80px' }}>
 
               <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.8)', fontWeight: 'bold', margin: '4px 0 12px', letterSpacing: '0.5px' }}>HELLO, {accountHolder}</p>
 
-              {/* Card Rekening Tosca-Putih */}
               <div style={{ backgroundColor: 'white', borderRadius: '20px', padding: '16px', boxShadow: '0 4px 16px rgba(0,0,0,0.1)', marginBottom: '16px' }}>
                 <div style={{ background: 'linear-gradient(90deg, #38bdf8 0%, #2dd4bf 100%)', borderRadius: '12px', padding: '8px 12px', color: 'white', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
                   <span style={{ backgroundColor: 'rgba(255,255,255,0.25)', padding: '3px 10px', borderRadius: '10px', fontSize: '10px', fontWeight: 'bold' }}>
@@ -310,7 +301,6 @@ export default function App() {
                 </div>
               </div>
 
-              {/* Seksi Iklan Promo */}
               <div style={{ marginBottom: '16px' }}>
                 <div style={{ background: adsList[currentAdIndex].bg, borderRadius: '18px', padding: '14px 16px', color: 'white', display: 'flex', justifyContent: 'space-between', alignItems: 'center', minHeight: '64px', boxShadow: '0 4px 12px rgba(0,0,0,0.15)' }}>
                   <div>
@@ -336,7 +326,6 @@ export default function App() {
                 </div>
               </div>
 
-              {/* Grid 8 Icon Menu */}
               <div style={{ backgroundColor: 'white', borderRadius: '24px', padding: '20px 12px', marginBottom: '16px' }}>
                 {activeTab === 'home' && (
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px 8px' }}>
@@ -369,7 +358,6 @@ export default function App() {
                   </div>
                 )}
 
-                {/* TAB TRANSFER */}
                 {activeTab === 'transfer' && (
                   <div>
                     <h4 style={{ fontSize: '14px', fontWeight: 'bold', color: '#00569c', marginBottom: '12px' }}>Transfer Dana</h4>
@@ -388,7 +376,6 @@ export default function App() {
                   </div>
                 )}
 
-                {/* TAB CARDLESS */}
                 {activeTab === 'cardless' && (
                   <div style={{ textAlign: 'center' }}>
                     <h4 style={{ fontSize: '14px', fontWeight: 'bold', color: '#00569c' }}>Tarik Tunai Tanpa Kartu</h4>
@@ -400,7 +387,6 @@ export default function App() {
                   </div>
                 )}
 
-                {/* TAB HISTORY */}
                 {activeTab === 'history' && (
                   <div>
                     <h4 style={{ fontSize: '14px', fontWeight: 'bold', color: '#00569c', marginBottom: '10px' }}>Account Transactions</h4>
@@ -420,7 +406,6 @@ export default function App() {
                   </div>
                 )}
 
-                {/* TAB CUSTOM SETTINGS */}
                 {activeTab === 'settings' && (
                   <div>
                     <h4 style={{ fontSize: '14px', fontWeight: 'bold', color: '#00569c', marginBottom: '10px' }}>Custom Data Rekening</h4>
@@ -435,7 +420,6 @@ export default function App() {
                 )}
               </div>
 
-              {/* Banner Informasi Perubahan Biaya Transfer */}
               <div style={{ backgroundColor: '#0284c7', background: 'linear-gradient(135deg, #0369a1 0%, #0c4a6e 100%)', borderRadius: '20px', padding: '16px', color: 'white', textAlign: 'center' }}>
                 <h4 style={{ fontSize: '13px', fontWeight: 'bold', margin: '0 0 8px' }}>Perubahan Biaya Transfer</h4>
                 <p style={{ fontSize: '10px', opacity: 0.9, lineHeight: '1.4', margin: '0 0 8px' }}>
@@ -447,7 +431,6 @@ export default function App() {
 
             </div>
 
-            {/* Bottom Nav Bar */}
             <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, backgroundColor: '#00569c', padding: '8px 16px', display: 'flex', justifyContent: 'space-around', alignItems: 'center', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
               <button onClick={() => setActiveTab('home')} style={{ background: 'none', border: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px', cursor: 'pointer', color: activeTab === 'home' ? '#38bdf8' : 'white' }}>
                 <span style={{ fontSize: '16px' }}>🏛️</span>
@@ -480,7 +463,6 @@ export default function App() {
           </div>
         )}
 
-        {/* MODAL ANIMASI SIDIK JARI GAYA-GAYAAN */}
         {showBiometricModal && (
           <div style={{ position: 'absolute', inset: 0, backgroundColor: 'rgba(0,0,0,0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100, padding: '20px' }}>
             <div style={{ backgroundColor: 'white', padding: '24px', borderRadius: '24px', textAlign: 'center', width: '100%', maxWidth: '260px', boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.3)' }}>
